@@ -7,30 +7,39 @@ We will see if this works
 
 > Example block here
 
+>> Backup Config
 /etc/keepalive/keepalived.conf file:
 ```
 vrrp_instance GeeknetDNS {
-        state MASTER
-        interface eth0
+        state BACKUP
+        interface eth1
         virtual_router_id 10
-        priority 100
+        priority 99
         advert_int 1
         authentication {
                 auth_type PASS
                 auth_pass passw123
         }
         virtual_ipaddress {
-        192.168.201.53
+        192.168.100.53/24
         }
 }
 
-virtual_server 192.168.201.53 53 {
+virtual_server 192.168.100.53 53 {
         delay_loop 10
         lb_algo rr
-        lb_kind NAT
-        persistence_timeout 9600
+        lb_kind DR
         protocol UDP
+        real_server 192.168.100.23 {
+                weight 1
+        }
+}
 
+virtual_server 192.168.100.53 53 {
+        delay_loop 10
+        lb_algo rr
+        lb_kind DR
+        protocol TCP
         real_server 192.168.100.23 {
                 weight 1
         }
